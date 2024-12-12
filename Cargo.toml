@@ -1,0 +1,19 @@
+[package]
+name = "user"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tonic = "0.11"
+prost = "0.12"
+tokio = { version = "1.0", features = ["macros", "rt-multi-thread"] }
+tokio-stream = { version = "0.1", features = ["net"] }
+prost-types = { version = "*" }
+tonic-reflection = "0.11"
+dotenvy = "0.15"
+
+[build-dependencies]
+tonic-build = "0.8"
+
+[dev-dependencies]
+uuid = { version = "1.2.2", features = ["v4", "fast-rng"] }
