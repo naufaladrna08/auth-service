@@ -42,5 +42,5 @@ jobs:
           docker pull kincirangin/auth-service:latest
           docker stop auth-service || true
           docker rm auth-service || true
-          docker run -d --name auth-service --network envoy-proxy -p 50002:50002 --restart always kincirangin/auth-service:latest
+          docker run -d --name auth-service --network envoy-network -p 50002:50002 --restart always kincirangin/auth-service:latest
           docker image prune -f
