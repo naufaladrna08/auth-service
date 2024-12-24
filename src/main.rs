@@ -1,6 +1,6 @@
 use std::{net::{IpAddr, Ipv4Addr, SocketAddr}, path::PathBuf};
 use axum::{
-  http::header, response::{IntoResponse, Response}, routing::get, Router
+  extract::Request, http::header, response::{IntoResponse, Response}, routing::get, Router
 };
 
 use prost_types::Timestamp;
@@ -107,9 +107,9 @@ async fn grpc_server() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 async fn http_server() -> Result<(), Box<dyn std::error::Error>> {
-  let addr = tokio::net::TcpListener::bind("0.0.0.0:8099").await.unwrap();
+  let addr = tokio::net::TcpListener::bind("0.0.0.0:9092").await.unwrap();
   let router = Router::new()
-    // .route("/v1/auth/docs/", get(serve_swagger_ui))
+    .route("/v1/auth/docs/*file", get(serve_swagger_ui))
     .route("/v1/auth/swagger.json", get(serve_openapi_spec));
 
   println!("HTTP server listening on {}", addr.local_addr().unwrap());
@@ -119,20 +119,38 @@ async fn http_server() -> Result<(), Box<dyn std::error::Error>> {
   Ok(())
 }
 
-// async fn serve_swagger_ui() -> Response {
-  // let path = req.uri().path().trim_start_matches("/docs/");
-  // let file_path = format!("./docs/{}", path);
-  // let contents = match tokio::fs::read(file_path).await {
-  //   Ok(contents) => contents,
-  //   Err(_) => return Response::builder()
-  //     .status(StatusCode::NOT_FOUND)
-  //     .body(Body::from("File not found"))
-  //     .unwrap(),
-  // };
+async fn serve_swagger_ui(req: Request) -> Result<Response, impl IntoResponse> {
+  let path = req
+    .uri()
+    .path()
+    .strip_prefix("/v1/auth/docs/")
+    .unwrap_or(req.uri().path())
+    .to_string();
+  let file_path = format!("./docs/swagger-ui/{}", path);
 
-  
-//   Ok()
-// }
+  match tokio::fs::read(file_path).await {
+    Ok(contents) => {
+      // Build the response with the file content
+      Response::builder()
+        // .header(header::CONTENT_TYPE, "text/html")
+        .body(contents.into())
+        .map_err(|err| {
+          (
+            axum::http::StatusCode::INTERNAL_SERVER_ERROR,
+            format!("Failed to build response: {}", err),
+          )
+        })
+    }
+    Err(err) => {
+      // Handle file read errors, e.g., file not found
+      Err((
+        axum::http::StatusCode::INTERNAL_SERVER_ERROR,
+        format!("Failed to read file: {}", err),
+      ))
+    }
+  }
+}
+
 
 async fn serve_openapi_spec() -> Result<Response, impl IntoResponse> {
   let file_path = PathBuf::from("./docs/auth.swagger.json");
