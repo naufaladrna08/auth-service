@@ -4,12 +4,6 @@ use std::path::PathBuf;
 fn main() -> Result<(), Box<dyn std::error::Error>> {
   let proto_file: &str = "./proto/auth.proto";
   let output_file = PathBuf::from(env::var("OUT_DIR").unwrap());
-  let go_path = PathBuf::from(env::var("GOPATH").unwrap_or_default());
-
-  // Ensure that the protoc-gen-openapiv2 plugin is installed
-  if !go_path.join("bin/protoc-gen-openapiv2").exists() {
-    return Err("protoc-gen-openapiv2 plugin is not installed".into());
-  }
 
   // Generate gRPC client and server code
   tonic_build::configure()
@@ -21,7 +15,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
   std::fs::create_dir_all(openapiv2_output)?;
 
   let protoc_args = vec![
-    format!("--plugin=protoc-gen-openapiv2={}", go_path.join("bin/protoc-gen-openapiv2").to_str().unwrap()),
+    format!("--plugin=protoc-gen-openapiv2={}", "/usr/local/bin/protoc-gen-openapiv2"),
     format!("-I{}", "proto"),
     format!("--openapiv2_out={}", openapiv2_output),
     proto_file.to_string(),
