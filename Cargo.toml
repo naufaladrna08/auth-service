@@ -6,11 +6,12 @@ edition = "2021"
 [dependencies]
 tonic = "0.11"
 prost = "0.12"
-tokio = { version = "1.0", features = ["macros", "rt-multi-thread"] }
+tokio = { version = "1.0", features = ["macros", "rt-multi-thread", "fs"] }
 tokio-stream = { version = "0.1", features = ["net"] }
 prost-types = { version = "0.12" }
 tonic-reflection = "0.11"
 dotenvy = "0.15"
+axum = "0.7.9"
 
 [build-dependencies]
 tonic-build = "0.8"
