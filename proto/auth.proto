@@ -1,9 +1,13 @@
 syntax = "proto3";
 import "google/protobuf/timestamp.proto";
 import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
 // import "google/api/httpbody.proto";
 
 package auth;
+
+// Of course
+option go_package = "./services";
 
 service AuthService {
   rpc Login(LoginRequest) returns (LoginResponse) {
@@ -11,11 +15,21 @@ service AuthService {
       post: "/v1/auth/login"
       body: "*"
     };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: ["Authentication"]
+      summary: "Login"
+      description: "Login to the system"
+    };
   }
   rpc Logout(LogoutRequest) returns (LogoutResponse) {
     option (google.api.http) = {
       post: "/v1/auth/logout"
       body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: ["Authentication"]
+      summary: "Logout"
+      description: "Logout from the system"
     };
   }
   rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse) {
@@ -23,17 +37,32 @@ service AuthService {
       post: "/v1/auth/refresh"
       body: "*"
     };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: ["Authentication"]
+      summary: "Refresh Token"
+      description: "Refresh the token"
+    };
   }
   rpc VerifyToken(VerifyTokenRequest) returns (VerifyTokenResponse) {
     option (google.api.http) = {
       post: "/v1/auth/verify"
       body: "*"
     };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: ["Authentication"]
+      summary: "Verify Token"
+      description: "Verify the token"
+    };
   }
   rpc Register(RegisterRequest) returns (RegisterResponse) {
     option (google.api.http) = {
       post: "/v1/auth/register"
       body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: ["Authentication"]
+      summary: "Register"
+      description: "Register a new user"
     };
   }
 }
@@ -80,5 +109,13 @@ message RegisterRequest {
 }
 
 message RegisterResponse {
+  string message = 1;
+}
+
+message TestRequest {
+  string message = 1;
+}
+
+message TestResponse {
   string message = 1;
 }
