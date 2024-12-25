@@ -11,7 +11,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     .compile(&[proto_file], &["proto"])?;
 
   // Generate OpenAPI v2 specification (swagger)
-  let openapiv2_output = "./docs";
+  let openapiv2_output = "./docs/specs";
   std::fs::create_dir_all(openapiv2_output)?;
 
   let protoc_args = vec![
